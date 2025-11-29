@@ -3,9 +3,8 @@ import json
 import os
 from typing import Dict, List, Any
 import requests
-import time
 
-# Mock API
+
 data_file = "portfolio_data.json"
 API_Key = "T8CT1TMFL20Q0G9E"
 # base url for Global Quote Endpoint
@@ -108,7 +107,7 @@ class PortfolioManager:
 
         print("\n" + "=" * 60)
         print("PORTFOLIO ANALYSIS")
-        print("+" * 60)
+        print("=" * 60)
 
         # dictionary to aggregate results by ticker
         analysis_summary : Dict[str, Dict[str, Any]] = {}
@@ -181,7 +180,7 @@ def main_cli():
         print("3. Analyze Portfolio (Fetch real-time prices)")
         print("4. Exist")
 
-        choice = input("Enter (1-4)")
+        choice = input("Enter (1-4): ")
 
         if choice == '1':
             ticker = input("Ticker symnol(e.g. MSFT, BTC): ").upper()
