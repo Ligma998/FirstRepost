@@ -180,8 +180,32 @@ def main_cli():
         print("2. Remove Holding (by ticker)")
         print("3. Analyze Portfolio (Fetch real-time prices)")
         print("4. Exist")
-        
 
+        choice = input("Enter (1-4)")
 
+        if choice == '1':
+            ticker = input("Ticker symnol(e.g. MSFT, BTC): ").upper()
+            try:
+                shares = float(input("Number of shares: "))
+                purchase_price = float(input("Purchase price per share: "))
+                purchase_date = input("Purchase date(YYYY-MM-DD), optional: ") or "2024-01-01"
+                manager.add_holdings(ticker, shares, purchase_price, purchase_date)
+            except ValueError:
+                print("Invalid number entered. Please try again.")
 
-        
+        elif choice == '2':
+            ticker = input("Ticker symbol to remove: ").upper()
+            manager.remove_holdings(ticker)
+
+        elif choice == '3':
+            manager.analyze_portfolio()
+
+        elif choice == '4':
+            print("Existing Portfolio Tracker. Goodbye!")
+            break
+
+        else:
+            print("Invalid choice.")
+
+if __name__ == "__main__":
+    main_cli()
