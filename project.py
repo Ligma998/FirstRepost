@@ -2,23 +2,50 @@
 import json
 import os
 from typing import Dict, List, Any
+import requests
+import time
 
 # Mock API
 data_file = "portfolio_data.json"
+API_Key = "T8CT1TMFL20Q0G9E"
+# base url for Global Quote Endpoint
+API_base_url = "https://www.alphavantage.co/query"
 
-def fetch_current_price(ticker:str) -> float:
-    if ticker.upper() == "AAPL":
-        return 190.50
-    if ticker.upper() == "TSLA":
-        return 240.50
-    if ticker.upper() == "GOOG":
-        return 140.50
-    if ticker.upper() == "BTC":
-        return 37000.00
-    if ticker.upper() == "ETH":
-        return 2025.00
-    # fall back price
-    return 100.00
+def fetch_current_price(ticker:str) -> float | None:
+    params = {"function": "GLOBAL_QUOTE",
+              "symbol": ticker.upper(),
+              "apikey": API_Key}
+    
+    try:
+        response = requests.get(API_base_url, params=params)
+        response.raise_for_status()
+        data = response.json()
+        #Data errors
+        if "Error Message" in data:
+            print(f"API Error:\nFailed to fetch the price for {ticker}\n{data["Error Message"]}")
+            return None
+        if "Note" in data and "rate limit" in data["Note"]:
+            print("Error:\nRate limit exceeded(5 calls per minute)\nTry again later.")
+            return None
+        
+        #parse the global quote
+        global_quote = data.get("Global Quote")
+        if global_quote and "05. price" in global_quote:
+            price_str = data['Global Quote']['05. price']
+            return float(price_str)
+        else:
+            print(f"API Error:\nPrice data missing for {ticker}")
+            return None
+        
+    except requests.exceptions.RequestException as e:
+        print(f"Network Error:\nCould not connect to Alpha Vantage: {e}")
+        return None
+    except ValueError:
+        print(f"Could not convert the {ticker} price string.")
+        return None
+    except Exception as e:
+        print(f"Unexpected error:{e}")
+        
 
 class PortfolioManager:
     def __init__(self):
